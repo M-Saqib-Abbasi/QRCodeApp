@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator - SoftwareSolutionHouse</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <img src="https://logo.softwaresolutionhouse.com/Images/Software-Solution-House.jpg" alt="Software Solution House Logo">
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --danger: #e74c3c;
+            --brand: #2c3e50;
+            --personal: #9b59b6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .brand-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .brand-logo img {
+            height: 40px;
+            width: auto;
+        }
+        
+        .brand-logo span {
+            font-weight: bold;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .input-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .output-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-personal {
+            background-color: var(--personal);
+        }
+        
+        .btn-personal:hover {
+            background-color: #8e44ad;
+        }
+        
+        .qr-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px dashed #ddd;
+            border-radius: 10px;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        
+        #qrcode {
+            margin: 0 auto;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .info-type {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .info-type button {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .social-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .social-input {
+            display: flex;
+            align-items: center;
+        }
+        
+        .social-input i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .data-info {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #ddd;
+        }
+        
+        .footer-brand {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .footer-brand img {
+            height: 30px;
+            width: auto;
+        }
+        
+        .footer-brand a {
+            color: var(--brand);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .footer-brand a:hover {
+            text-decoration: underline;
+        }
+        
+        .status-message {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            display: none;
+        }
+        
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .preview-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .preview-container h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+            text-align: center;
+        }
+        
+        .qr-preview {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .preview-header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .preview-content {
+            margin-bottom: 15px;
+        }
+        
+        .preview-footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .personal-preview {
+            background: linear-gradient(135deg, #f5f7fa, #e3e8f0);
+            border-left: 4px solid var(--personal);
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .social-links {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-type {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="brand-logo">
+                <img src="https://logo.softwaresolutionhouse.com/Images/Software-Solution-House.png" alt="Software Solution House">
+                <span>Software Solution House</span>
+            </div>
+            <h1>QR Code Generator</h1>
+            <p class="subtitle">Create QR codes for your business and personal information</p>
+        </header>
+        
+        <div class="main-content">
+            <section class="input-section">
+                <div class="info-type">
+                    <button class="btn active" data-type="social">Social Media</button>
+                    <button class="btn" data-type="business">Business Details</button>
+                    <button class="btn" data-type="address">Office Address</button>
+                    <button class="btn" data-type="personal">Personal Info</button>
+                    <button class="btn" data-type="all">All Information</button>
+                    <button class="btn" data-type="simple">Simple Text</button>
+                </div>
+                
+                <div id="social-form" class="form-content">
+                    <h2>Social Media Links</h2>
+                    <div class="data-info">
+                        <strong>Tip:</strong> Use shortened URLs (like bit.ly) for longer links to save space.
+                    </div>
+                    <div class="form-group">
+                        <div class="social-links">
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="facebook" placeholder="Facebook URL (https://facebook.com/yourpage)">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="instagram" placeholder="Instagram URL (https://instagram.com/yourprofile)">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="twitter" placeholder="Twitter URL (https://twitter.com/yourhandle)">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="linkedin" placeholder="LinkedIn URL (https://linkedin.com/in/yourprofile)">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="youtube" placeholder="YouTube URL (https://youtube.com/yourchannel)">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="website" placeholder="Website URL (https://yourwebsite.com)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="business-form" class="form-content hidden">
+                    <h2>Business Details</h2>
+                    <div class="form-group">
+                        <label for="business-name">Business Name</label>
+                        <input type="text" id="business-name" placeholder="Enter your business name">
+                    </div>
+                    <div class="form-group">
+                        <label for="business-description">Business Description</label>
+                        <textarea id="business-description" placeholder="Describe your business"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="business-phone">Phone Number</label>
+                        <input type="text" id="business-phone" placeholder="Business phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="business-email">Email Address</label>
+                        <input type="email" id="business-email" placeholder="Business email">
+                    </div>
+                </div>
+                
+                <div id="address-form" class="form-content hidden">
+                    <h2>Office Address</h2>
+                    <div class="form-group">
+                        <label for="address-line1">Address Line 1</label>
+                        <input type="text" id="address-line1" placeholder="Street address, P.O. box">
+                    </div>
+                    <div class="form-group">
+                        <label for="address-line2">Address Line 2</label>
+                        <input type="text" id="address-line2" placeholder="Apartment, suite, unit, building, floor, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label for="address-city">City</label>
+                        <input type="text" id="address-city" placeholder="City">
+                    </div>
+                    <div class="form-group">
+                        <label for="address-state">State/Province/Region</label>
+                        <input type="text" id="address-state" placeholder="State">
+                    </div>
+                    <div class="form-group">
+                        <label for="address-zip">ZIP/Postal Code</label>
+                        <input type="text" id="address-zip" placeholder="ZIP code">
+                    </div>
+                    <div class="form-group">
+                        <label for="address-country">Country</label>
+                        <input type="text" id="address-country" placeholder="Country">
+                    </div>
+                </div>
+                
+                <div id="personal-form" class="form-content hidden">
+                    <h2>Personal Information</h2>
+                    <div class="data-info">
+                        <strong>Tip:</strong> Create a digital business card with your personal and professional details.
+                    </div>
+                    <div class="form-group">
+                        <label for="personal-name">Full Name</label>
+                        <input type="text" id="personal-name" placeholder="Your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="personal-title">Title/Profession</label>
+                        <input type="text" id="personal-title" placeholder="Your job title or profession">
+                    </div>
+                    <div class="form-group">
+                        <label for="personal-company">Company (Optional)</label>
+                        <input type="text" id="personal-company" placeholder="Your company name">
+                    </div>
+                    <div class="form-group">
+                        <label for="personal-phone">Mobile Number</label>
+                        <input type="text" id="personal-phone" placeholder="Your mobile number">
+                    </div>
+                    <div class="form-group">
+                        <label for="personal-email">Email Address</label>
+                        <input type="email" id="personal-email" placeholder="Your email address">
+                    </div>
+                    
+                    <h3>Social Profiles</h3>
+                    <div class="form-group">
+                        <div class="social-links">
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="personal-facebook" placeholder="Facebook Profile">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="personal-instagram" placeholder="Instagram Profile">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="personal-twitter" placeholder="Twitter Profile">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="personal-linkedin" placeholder="LinkedIn Profile">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="personal-whatsapp" placeholder="WhatsApp Number">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="personal-telegram" placeholder="Telegram Username">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Additional Information</h3>
+                    <div class="form-group">
+                        <label for="personal-website">Personal Website/Blog</label>
+                        <input type="text" id="personal-website" placeholder="Your website or blog">
+                    </div>
+                    <div class="form-group">
+                        <label for="personal-bio">Short Bio</label>
+                        <textarea id="personal-bio" placeholder="A brief introduction about yourself"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="personal-interests">Interests/Hobbies (Optional)</label>
+                        <input type="text" id="personal-interests" placeholder="Your interests or hobbies">
+                    </div>
+                </div>
+                
+                <div id="all-form" class="form-content hidden">
+                    <h2>All Business Information</h2>
+                    <div class="data-info">
+                        <strong>Note:</strong> For best results, keep descriptions concise and use shortened URLs.
+                    </div>
+                    <div class="form-group">
+                        <label for="all-business-name">Business Name</label>
+                        <input type="text" id="all-business-name" placeholder="Enter your business name">
+                    </div>
+                    <div class="form-group">
+                        <label for="all-business-description">Business Description</label>
+                        <textarea id="all-business-description" placeholder="Brief description of your business"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="all-business-phone">Phone Number</label>
+                        <input type="text" id="all-business-phone" placeholder="Business phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="all-business-email">Email Address</label>
+                        <input type="email" id="all-business-email" placeholder="Business email">
+                    </div>
+                    
+                    <h3>Social Media Links</h3>
+                    <div class="form-group">
+                        <div class="social-links">
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="all-facebook" placeholder="Facebook URL">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="all-instagram" placeholder="Instagram URL">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="all-twitter" placeholder="Twitter URL">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="all-linkedin" placeholder="LinkedIn URL">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="all-youtube" placeholder="YouTube URL">
+                            </div>
+                            <div class="social-input">
+                                <i>🔗</i>
+                                <input type="text" id="all-website" placeholder="Website URL">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Office Address</h3>
+                    <div class="form-group">
+                        <label for="all-address-line1">Address Line 1</label>
+                        <input type="text" id="all-address-line1" placeholder="Street address, P.O. box">
+                    </div>
+                    <div class="form-group">
+                        <label for="all-address-line2">Address Line 2</label>
+                        <input type="text" id="all-address-line2" placeholder="Apartment, suite, unit, building, floor, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label for="all-address-city">City</label>
+                        <input type="text" id="all-address-city" placeholder="City">
+                    </div>
+                    <div class="form-group">
+                        <label for="all-address-state">State/Province/Region</label>
+                        <input type="text" id="all-address-state" placeholder="State">
+                    </div>
+                    <div class="form-group">
+                        <label for="all-address-zip">ZIP/Postal Code</label>
+                        <input type="text" id="all-address-zip" placeholder="ZIP code">
+                    </div>
+                    <div class="form-group">
+                        <label for="all-address-country">Country</label>
+                        <input type="text" id="all-address-country" placeholder="Country">
+                    </div>
+                </div>
+                
+                <div id="simple-form" class="form-content hidden">
+                    <h2>Simple Text QR Code</h2>
+                    <div class="data-info">
+                        <strong>Tip:</strong> This creates a QR code that displays your text in a formatted way when scanned.
+                    </div>
+                    <div class="form-group">
+                        <label for="simple-text">Enter your text</label>
+                        <textarea id="simple-text" placeholder="Enter any text you want to encode in the QR code"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="text-title">Title (Optional)</label>
+                        <input type="text" id="text-title" placeholder="Title for your content">
+                    </div>
+                </div>
+                
+                <div id="status-message" class="status-message"></div>
+                
+                <button id="generate-btn" class="btn btn-secondary">Generate QR Code</button>
+                <button id="clear-btn" class="btn btn-danger">Clear All</button>
+            </section>
+            
+            <section class="output-section">
+                <h2>Your QR Code</h2>
+                <div class="qr-container">
+                    <div id="qrcode"></div>
+                    <p id="qr-placeholder">Your QR code will appear here after you generate it</p>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="download-btn" class="btn" disabled>Download QR Code</button>
+                </div>
+                
+                <div class="preview-container">
+                    <h3>Preview of Scanned Content</h3>
+                    <div class="qr-preview" id="preview-box">
+                        <div class="preview-header">
+                            <h4 id="preview-title">Your Content</h4>
+                        </div>
+                        <div class="preview-content" id="preview-content">
+                            <p>When scanned, your QR code will display the information you've entered in a formatted layout.</p>
+                        </div>
+                        <div class="preview-footer">
+                            Generated by SoftwareSolutionHouse QR Generator
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="instructions">
+                    <h3>How to Use</h3>
+                    <p>1. Select the type of information you want to encode</p>
+                    <p>2. Fill in the details in the form</p>
+                    <p>3. Click "Generate QR Code"</p>
+                    <p>4. Download your QR code</p>
+                    <div class="data-info">
+                        <strong>QR Code Limits:</strong> Standard QR codes can hold up to ~3KB of data. 
+                        For large amounts of data, consider using shortened URLs and concise text.
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <footer>
+            <p>QR Code Generator &copy; 2023 | Share your business and personal information easily</p>
+            <div class="footer-brand">
+                <img src="https://logo.softwaresolutionhouse.com/Images/Software-Solution-House.png" alt="Software Solution House">
+                <a href="https://softwaresolutionhouse.com/" target="_blank">SoftwareSolutionHouse.com</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            let qrcode = null;
+            
+            // Switch between form types
+            $('.info-type button').click(function() {
+                $('.info-type button').removeClass('active');
+                $(this).addClass('active');
+                
+                const type = $(this).data('type');
+                $('.form-content').addClass('hidden');
+                $(`#${type}-form`).removeClass('hidden');
+            });
+            
+            // Generate QR Code
+            $('#generate-btn').click(function() {
+                const activeType = $('.info-type button.active').data('type');
+                let qrData = '';
+                
+                if (activeType === 'social') {
+                    qrData = generateSocialData();
+                    updatePreview('social', qrData);
+                } else if (activeType === 'business') {
+                    qrData = generateBusinessData();
+                    updatePreview('business', qrData);
+                } else if (activeType === 'address') {
+                    qrData = generateAddressData();
+                    updatePreview('address', qrData);
+                } else if (activeType === 'personal') {
+                    qrData = generatePersonalData();
+                    updatePreview('personal', qrData);
+                } else if (activeType === 'all') {
+                    qrData = generateAllData();
+                    updatePreview('all', qrData);
+                } else if (activeType === 'simple') {
+                    qrData = generateSimpleData();
+                    updatePreview('simple', qrData);
+                }
+                
+                if (qrData) {
+                    // Check data length and warn if too large
+                    if (qrData.length > 2000) {
+                        showStatus('Warning: Your data is quite large. QR code might not scan reliably. Consider shortening URLs.', 'warning');
+                    }
+                    
+                    try {
+                        generateQRCode(qrData);
+                        showStatus('QR code generated successfully!', 'success');
+                        $('#download-btn').prop('disabled', false);
+                    } catch (error) {
+                        console.error('QR Code generation error:', error);
+                        if (qrData.length > 3000) {
+                            showStatus('Error: Too much data for QR code. Please shorten URLs or reduce text.', 'error');
+                        } else {
+                            showStatus('Error generating QR code. Please try with less data or shorter URLs.', 'error');
+                        }
+                    }
+                } else {
+                    showStatus('Please fill in at least one field to generate a QR code.', 'error');
+                }
+            });
+            
+            // Clear all fields
+            $('#clear-btn').click(function() {
+                $('input, textarea').val('');
+                $('#qrcode').empty();
+                $('#qr-placeholder').show();
+                $('#download-btn').prop('disabled', true);
+                hideStatus();
+                qrcode = null;
+                updatePreview('clear', '');
+            });
+            
+            // Download QR Code
+            $('#download-btn').click(function() {
+                if (qrcode) {
+                    const canvas = document.querySelector('#qrcode canvas');
+                    if (canvas) {
+                        const link = document.createElement('a');
+                        link.download = 'qr-code.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                    }
+                }
+            });
+            
+            // Show status message
+            function showStatus(message, type) {
+                const statusEl = $('#status-message');
+                statusEl.removeClass('status-success status-error status-warning')
+                         .addClass(`status-${type}`)
+                         .text(message)
+                         .show();
+                
+                // Auto-hide success messages after 3 seconds
+                if (type === 'success') {
+                    setTimeout(hideStatus, 3000);
+                }
+            }
+            
+            // Hide status message
+            function hideStatus() {
+                $('#status-message').hide();
+            }
+            
+            // Update preview based on data type
+            function updatePreview(type, data) {
+                const titleEl = $('#preview-title');
+                const contentEl = $('#preview-content');
+                const previewBox = $('#preview-box');
+                
+                // Reset preview box styling
+                previewBox.removeClass('personal-preview');
+                
+                if (type === 'clear') {
+                    titleEl.text('Your Content');
+                    contentEl.html('<p>When scanned, your QR code will display the information you\'ve entered in a formatted layout.</p>');
+                    return;
+                }
+                
+                if (type === 'simple') {
+                    const title = $('#text-title').val() || 'Your Message';
+                    const text = $('#simple-text').val();
+                    
+                    titleEl.text(title);
+                    contentEl.html(`<p style="text-align: center; font-size: 1.1rem; line-height: 1.8;">${text.replace(/\n/g, '<br>')}</p>`);
+                    return;
+                }
+                
+                if (type === 'personal') {
+                    previewBox.addClass('personal-preview');
+                    titleEl.text('Personal Information');
+                    
+                    let htmlContent = '';
+                    
+                    // Name and Title
+                    if ($('#personal-name').val()) {
+                        htmlContent += `<div style="text-align: center; margin-bottom: 15px;">
+                            <h3 style="color: #9b59b6; margin-bottom: 5px;">${$('#personal-name').val()}</h3>
+                            ${$('#personal-title').val() ? `<p style="font-style: italic;">${$('#personal-title').val()}</p>` : ''}
+                            ${$('#personal-company').val() ? `<p style="font-size: 0.9rem;">${$('#personal-company').val()}</p>` : ''}
+                        </div>`;
+                    }
+                    
+                    // Contact Information
+                    const contactInfo = [];
+                    if ($('#personal-phone').val()) contactInfo.push(`📱 ${$('#personal-phone').val()}`);
+                    if ($('#personal-email').val()) contactInfo.push(`✉️ ${$('#personal-email').val()}`);
+                    
+                    if (contactInfo.length > 0) {
+                        htmlContent += `<div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                            <h4 style="margin-bottom: 8px; color: #555;">Contact Information</h4>
+                            ${contactInfo.map(info => `<div style="margin-bottom: 5px;">${info}</div>`).join('')}
+                        </div>`;
+                    }
+                    
+                    // Social Profiles
+                    const socialProfiles = [];
+                    if ($('#personal-facebook').val()) socialProfiles.push(`Facebook: ${$('#personal-facebook').val()}`);
+                    if ($('#personal-instagram').val()) socialProfiles.push(`Instagram: ${$('#personal-instagram').val()}`);
+                    if ($('#personal-twitter').val()) socialProfiles.push(`Twitter: ${$('#personal-twitter').val()}`);
+                    if ($('#personal-linkedin').val()) socialProfiles.push(`LinkedIn: ${$('#personal-linkedin').val()}`);
+                    if ($('#personal-whatsapp').val()) socialProfiles.push(`WhatsApp: ${$('#personal-whatsapp').val()}`);
+                    if ($('#personal-telegram').val()) socialProfiles.push(`Telegram: ${$('#personal-telegram').val()}`);
+                    
+                    if (socialProfiles.length > 0) {
+                        htmlContent += `<div style="margin-bottom: 15px;">
+                            <h4 style="margin-bottom: 8px; color: #555;">Social Profiles</h4>
+                            ${socialProfiles.map(profile => `<div style="margin-bottom: 5px; font-size: 0.9rem;">${profile}</div>`).join('')}
+                        </div>`;
+                    }
+                    
+                    // Additional Information
+                    if ($('#personal-bio').val()) {
+                        htmlContent += `<div style="margin-bottom: 15px;">
+                            <h4 style="margin-bottom: 8px; color: #555;">About Me</h4>
+                            <p style="font-size: 0.9rem; line-height: 1.5;">${$('#personal-bio').val()}</p>
+                        </div>`;
+                    }
+                    
+                    if ($('#personal-interests').val()) {
+                        htmlContent += `<div style="margin-bottom: 15px;">
+                            <h4 style="margin-bottom: 8px; color: #555;">Interests</h4>
+                            <p style="font-size: 0.9rem;">${$('#personal-interests').val()}</p>
+                        </div>`;
+                    }
+                    
+                    if ($('#personal-website').val()) {
+                        htmlContent += `<div style="text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px dashed #ddd;">
+                            <strong>Website:</strong> ${$('#personal-website').val()}
+                        </div>`;
+                    }
+                    
+                    contentEl.html(htmlContent || '<p>No personal information to display</p>');
+                    return;
+                }
+                
+                // For other types, parse the data and format it nicely
+                titleEl.text(type === 'business' ? 'Business Information' : 
+                            type === 'social' ? 'Social Media Links' : 
+                            type === 'address' ? 'Office Address' : 'All Information');
+                
+                let htmlContent = '';
+                const lines = data.split('\n');
+                
+                lines.forEach(line => {
+                    if (line.includes(':')) {
+                        const parts = line.split(':');
+                        const key = parts[0].trim();
+                        const value = parts.slice(1).join(':').trim();
+                        
+                        if (key && value) {
+                            htmlContent += `<div style="margin-bottom: 10px;">
+                                <strong>${key}:</strong> ${value}
+                            </div>`;
+                        }
+                    } else if (line.trim()) {
+                        htmlContent += `<div style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; text-align: center;">
+                            <strong>${line}</strong>
+                        </div>`;
+                    }
+                });
+                
+                contentEl.html(htmlContent || '<p>No content to display</p>');
+            }
+            
+            // Generate social media data with URL optimization
+            function generateSocialData() {
+                const links = [];
+                
+                // Use shorter labels and optimize URLs
+                if ($('#facebook').val()) {
+                    let url = $('#facebook').val();
+                    // Shorten common URL patterns
+                    url = url.replace('https://www.facebook.com/', 'fb:');
+                    url = url.replace('https://facebook.com/', 'fb:');
+                    links.push(`Facebook: ${url}`);
+                }
+                if ($('#instagram').val()) {
+                    let url = $('#instagram').val();
+                    url = url.replace('https://www.instagram.com/', 'ig:');
+                    url = url.replace('https://instagram.com/', 'ig:');
+                    links.push(`Instagram: ${url}`);
+                }
+                if ($('#twitter').val()) {
+                    let url = $('#twitter').val();
+                    url = url.replace('https://www.twitter.com/', 'tw:');
+                    url = url.replace('https://twitter.com/', 'tw:');
+                    links.push(`Twitter: ${url}`);
+                }
+                if ($('#linkedin').val()) {
+                    let url = $('#linkedin').val();
+                    url = url.replace('https://www.linkedin.com/in/', 'li:');
+                    url = url.replace('https://linkedin.com/in/', 'li:');
+                    links.push(`LinkedIn: ${url}`);
+                }
+                if ($('#youtube').val()) {
+                    let url = $('#youtube').val();
+                    url = url.replace('https://www.youtube.com/', 'yt:');
+                    url = url.replace('https://youtube.com/', 'yt:');
+                    links.push(`YouTube: ${url}`);
+                }
+                if ($('#website').val()) {
+                    let url = $('#website').val();
+                    // Remove protocol for common URLs to save space
+                    url = url.replace('https://', '');
+                    url = url.replace('http://', '');
+                    links.push(`Website: ${url}`);
+                }
+                
+                return links.length > 0 ? links.join('\n') : '';
+            }
+            
+            // Generate business data with optimized format
+            function generateBusinessData() {
+                const data = [];
+                
+                if ($('#business-name').val()) data.push(`BUSINESS INFORMATION`);
+                if ($('#business-name').val()) data.push(`Name: ${$('#business-name').val()}`);
+                if ($('#business-description').val()) {
+                    // Limit description length
+                    let desc = $('#business-description').val();
+                    if (desc.length > 200) {
+                        desc = desc.substring(0, 200) + '...';
+                    }
+                    data.push(`Description: ${desc}`);
+                }
+                if ($('#business-phone').val()) data.push(`Phone: ${$('#business-phone').val()}`);
+                if ($('#business-email').val()) data.push(`Email: ${$('#business-email').val()}`);
+                
+                return data.length > 0 ? data.join('\n') : '';
+            }
+            
+            // Generate address data with optimized format
+            function generateAddressData() {
+                const addressParts = [];
+                
+                if ($('#address-line1').val()) addressParts.push($('#address-line1').val());
+                if ($('#address-line2').val()) addressParts.push($('#address-line2').val());
+                if ($('#address-city').val()) addressParts.push($('#address-city').val());
+                if ($('#address-state').val()) addressParts.push($('#address-state').val());
+                if ($('#address-zip').val()) addressParts.push($('#address-zip').val());
+                if ($('#address-country').val()) addressParts.push($('#address-country').val());
+                
+                return addressParts.length > 0 ? `OFFICE ADDRESS\n${addressParts.join(', ')}` : '';
+            }
+            
+            // Generate personal data
+            function generatePersonalData() {
+                const data = [];
+                
+                // Personal Information
+                if ($('#personal-name').val()) data.push(`PERSONAL INFORMATION`);
+                if ($('#personal-name').val()) data.push(`Name: ${$('#personal-name').val()}`);
+                if ($('#personal-title').val()) data.push(`Title: ${$('#personal-title').val()}`);
+                if ($('#personal-company').val()) data.push(`Company: ${$('#personal-company').val()}`);
+                if ($('#personal-phone').val()) data.push(`Mobile: ${$('#personal-phone').val()}`);
+                if ($('#personal-email').val()) data.push(`Email: ${$('#personal-email').val()}`);
+                
+                // Social Profiles
+                const socialProfiles = [];
+                if ($('#personal-facebook').val()) socialProfiles.push(`Facebook: ${$('#personal-facebook').val()}`);
+                if ($('#personal-instagram').val()) socialProfiles.push(`Instagram: ${$('#personal-instagram').val()}`);
+                if ($('#personal-twitter').val()) socialProfiles.push(`Twitter: ${$('#personal-twitter').val()}`);
+                if ($('#personal-linkedin').val()) socialProfiles.push(`LinkedIn: ${$('#personal-linkedin').val()}`);
+                if ($('#personal-whatsapp').val()) socialProfiles.push(`WhatsApp: ${$('#personal-whatsapp').val()}`);
+                if ($('#personal-telegram').val()) socialProfiles.push(`Telegram: ${$('#personal-telegram').val()}`);
+                
+                if (socialProfiles.length > 0) {
+                    data.push('', 'SOCIAL PROFILES');
+                    data.push(...socialProfiles);
+                }
+                
+                // Additional Information
+                if ($('#personal-website').val()) data.push(`Website: ${$('#personal-website').val()}`);
+                if ($('#personal-bio').val()) {
+                    let bio = $('#personal-bio').val();
+                    if (bio.length > 150) bio = bio.substring(0, 150) + '...';
+                    data.push(`Bio: ${bio}`);
+                }
+                if ($('#personal-interests').val()) data.push(`Interests: ${$('#personal-interests').val()}`);
+                
+                return data.length > 0 ? data.join('\n') : '';
+            }
+            
+            // Generate all data with optimization
+            function generateAllData() {
+                const data = [];
+                
+                // Business Information with shorter labels
+                if ($('#all-business-name').val()) data.push(`BUSINESS INFORMATION`);
+                if ($('#all-business-name').val()) data.push(`Name: ${$('#all-business-name').val()}`);
+                if ($('#all-business-description').val()) {
+                    let desc = $('#all-business-description').val();
+                    if (desc.length > 150) desc = desc.substring(0, 150) + '...';
+                    data.push(`Description: ${desc}`);
+                }
+                if ($('#all-business-phone').val()) data.push(`Phone: ${$('#all-business-phone').val()}`);
+                if ($('#all-business-email').val()) data.push(`Email: ${$('#all-business-email').val()}`);
+                
+                // Social Media Links with optimized format
+                const socialLinks = [];
+                if ($('#all-facebook').val()) {
+                    let url = $('#all-facebook').val();
+                    url = url.replace('https://www.facebook.com/', 'fb:');
+                    url = url.replace('https://facebook.com/', 'fb:');
+                    socialLinks.push(`Facebook: ${url}`);
+                }
+                if ($('#all-instagram').val()) {
+                    let url = $('#all-instagram').val();
+                    url = url.replace('https://www.instagram.com/', 'ig:');
+                    url = url.replace('https://instagram.com/', 'ig:');
+                    socialLinks.push(`Instagram: ${url}`);
+                }
+                if ($('#all-twitter').val()) {
+                    let url = $('#all-twitter').val();
+                    url = url.replace('https://www.twitter.com/', 'tw:');
+                    url = url.replace('https://twitter.com/', 'tw:');
+                    socialLinks.push(`Twitter: ${url}`);
+                }
+                if ($('#all-linkedin').val()) {
+                    let url = $('#all-linkedin').val();
+                    url = url.replace('https://www.linkedin.com/in/', 'li:');
+                    url = url.replace('https://linkedin.com/in/', 'li:');
+                    socialLinks.push(`LinkedIn: ${url}`);
+                }
+                if ($('#all-youtube').val()) {
+                    let url = $('#all-youtube').val();
+                    url = url.replace('https://www.youtube.com/', 'yt:');
+                    url = url.replace('https://youtube.com/', 'yt:');
+                    socialLinks.push(`YouTube: ${url}`);
+                }
+                if ($('#all-website').val()) {
+                    let url = $('#all-website').val();
+                    url = url.replace('https://', '');
+                    url = url.replace('http://', '');
+                    socialLinks.push(`Website: ${url}`);
+                }
+                
+                if (socialLinks.length > 0) {
+                    data.push('', 'SOCIAL MEDIA LINKS');
+                    data.push(...socialLinks);
+                }
+                
+                // Address with optimized format
+                const addressParts = [];
+                if ($('#all-address-line1').val()) addressParts.push($('#all-address-line1').val());
+                if ($('#all-address-line2').val()) addressParts.push($('#all-address-line2').val());
+                if ($('#all-address-city').val()) addressParts.push($('#all-address-city').val());
+                if ($('#all-address-state').val()) addressParts.push($('#all-address-state').val());
+                if ($('#all-address-zip').val()) addressParts.push($('#all-address-zip').val());
+                if ($('#all-address-country').val()) addressParts.push($('#all-address-country').val());
+                
+                if (addressParts.length > 0) {
+                    data.push('', 'OFFICE ADDRESS');
+                    data.push(addressParts.join(', '));
+                }
+                
+                return data.length > 0 ? data.join('\n') : '';
+            }
+            
+            // Generate simple text data
+            function generateSimpleData() {
+                const text = $('#simple-text').val();
+                const title = $('#text-title').val();
+                
+                if (!text) return '';
+                
+                let data = '';
+                if (title) {
+                    data = `TITLE: ${title}\n\n${text}`;
+                } else {
+                    data = text;
+                }
+                
+                return data;
+            }
+            
+            // Generate QR code using the library
+            function generateQRCode(data) {
+                $('#qrcode').empty();
+                $('#qr-placeholder').hide();
+                
+                // Clear previous QR code
+                if (qrcode) {
+                    qrcode.clear();
+                }
+                
+                // Create new QR code with error correction for better reliability
+                qrcode = new QRCode(document.getElementById("qrcode"), {
+                    text: data,
+                    width: 256,
+                    height: 256,
+                    colorDark: "#2c3e50",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H // Highest error correction
+                });
+            }
+        });
+    </script>
+</body>
+</html>
