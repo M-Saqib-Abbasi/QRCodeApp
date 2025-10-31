@@ -376,6 +376,13 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             max-width: 400px;
             margin: 0 auto;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .qr-preview * {
+            max-width: 100%;
+            word-break: break-word;
         }
         
         .preview-header {
@@ -387,6 +394,14 @@
         
         .preview-content {
             margin-bottom: 15px;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .preview-content a,
+        .preview-content div {
+            word-break: break-all;
+            overflow-wrap: anywhere;
         }
         
         .preview-footer {
@@ -404,8 +419,39 @@
         }
         
         @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .brand-logo img {
+                height: 30px;
+            }
+            
+            .brand-logo span {
+                font-size: 1.2rem;
+            }
+            
             .main-content {
                 flex-direction: column;
+                gap: 20px;
+            }
+            
+            .input-section,
+            .output-section {
+                padding: 15px;
             }
             
             .social-links {
@@ -414,6 +460,46 @@
             
             .info-type {
                 flex-direction: column;
+            }
+            
+            .info-type button {
+                min-width: 100%;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+            }
+            
+            .qr-container {
+                min-height: 250px;
+            }
+            
+            input, textarea, select {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .brand-logo {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .qr-preview {
+                padding: 15px;
+            }
+            
+            .preview-container {
+                padding: 15px;
             }
         }
     </style>
@@ -747,6 +833,7 @@
     <script>
         $(document).ready(function() {
             let qrcode = null;
+            let currentQRData = null;
             
             // Switch between form types
             $('.info-type button').click(function() {
@@ -814,19 +901,58 @@
                 $('#download-btn').prop('disabled', true);
                 hideStatus();
                 qrcode = null;
+                currentQRData = null;
                 updatePreview('clear', '');
             });
             
-            // Download QR Code
+            // Download QR Code with proper high resolution
             $('#download-btn').click(function() {
-                if (qrcode) {
-                    const canvas = document.querySelector('#qrcode canvas');
-                    if (canvas) {
-                        const link = document.createElement('a');
-                        link.download = 'qr-code.png';
-                        link.href = canvas.toDataURL('image/png');
-                        link.click();
-                    }
+                if (qrcode && currentQRData) {
+                    // Create a temporary container for high-res QR code
+                    const tempDiv = document.createElement('div');
+                    tempDiv.style.position = 'absolute';
+                    tempDiv.style.left = '-9999px';
+                    tempDiv.style.top = '-9999px';
+                    tempDiv.id = 'temp-qr-container';
+                    document.body.appendChild(tempDiv);
+                    
+                    // Generate QR code at high resolution (600x600 - good balance)
+                    const highResQR = new QRCode(tempDiv, {
+                        text: currentQRData,
+                        width: 600,
+                        height: 600,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M // Medium error correction for better compatibility
+                    });
+                    
+                    // Wait for QR code to generate, then download
+                    setTimeout(function() {
+                        const canvas = tempDiv.querySelector('canvas');
+                        if (canvas) {
+                            // Create final canvas with white border (quiet zone) for better scanning
+                            const margin = 40; // White margin around QR code (quiet zone)
+                            const finalCanvas = document.createElement('canvas');
+                            finalCanvas.width = 600 + (margin * 2);
+                            finalCanvas.height = 600 + (margin * 2);
+                            const ctx = finalCanvas.getContext('2d');
+                            
+                            // Fill entire canvas with white background
+                            ctx.fillStyle = '#FFFFFF';
+                            ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+                            
+                            // Draw QR code centered with margin (quiet zone)
+                            ctx.drawImage(canvas, margin, margin, 600, 600);
+                            
+                            // Download with white background and quiet zone
+                            const link = document.createElement('a');
+                            link.download = 'qr-code.png';
+                            link.href = finalCanvas.toDataURL('image/png', 1.0);
+                            link.click();
+                        }
+                        // Clean up
+                        document.body.removeChild(tempDiv);
+                    }, 200);
                 }
             });
             
@@ -956,8 +1082,9 @@
                         const value = parts.slice(1).join(':').trim();
                         
                         if (key && value) {
-                            htmlContent += `<div style="margin-bottom: 10px;">
-                                <strong>${key}:</strong> ${value}
+                            htmlContent += `<div style="margin-bottom: 10px; word-break: break-word; overflow-wrap: anywhere;">
+                                <strong>${key}:</strong><br>
+                                <span style="color: #555; font-size: 0.95rem;">${value}</span>
                             </div>`;
                         }
                     } else if (line.trim()) {
@@ -970,48 +1097,27 @@
                 contentEl.html(htmlContent || '<p>No content to display</p>');
             }
             
-            // Generate social media data with URL optimization
+            // Generate social media data
             function generateSocialData() {
                 const links = [];
                 
-                // Use shorter labels and optimize URLs
                 if ($('#facebook').val()) {
-                    let url = $('#facebook').val();
-                    // Shorten common URL patterns
-                    url = url.replace('https://www.facebook.com/', 'fb:');
-                    url = url.replace('https://facebook.com/', 'fb:');
-                    links.push(`Facebook: ${url}`);
+                    links.push(`Facebook: ${$('#facebook').val()}`);
                 }
                 if ($('#instagram').val()) {
-                    let url = $('#instagram').val();
-                    url = url.replace('https://www.instagram.com/', 'ig:');
-                    url = url.replace('https://instagram.com/', 'ig:');
-                    links.push(`Instagram: ${url}`);
+                    links.push(`Instagram: ${$('#instagram').val()}`);
                 }
                 if ($('#twitter').val()) {
-                    let url = $('#twitter').val();
-                    url = url.replace('https://www.twitter.com/', 'tw:');
-                    url = url.replace('https://twitter.com/', 'tw:');
-                    links.push(`Twitter: ${url}`);
+                    links.push(`Twitter: ${$('#twitter').val()}`);
                 }
                 if ($('#linkedin').val()) {
-                    let url = $('#linkedin').val();
-                    url = url.replace('https://www.linkedin.com/in/', 'li:');
-                    url = url.replace('https://linkedin.com/in/', 'li:');
-                    links.push(`LinkedIn: ${url}`);
+                    links.push(`LinkedIn: ${$('#linkedin').val()}`);
                 }
                 if ($('#youtube').val()) {
-                    let url = $('#youtube').val();
-                    url = url.replace('https://www.youtube.com/', 'yt:');
-                    url = url.replace('https://youtube.com/', 'yt:');
-                    links.push(`YouTube: ${url}`);
+                    links.push(`YouTube: ${$('#youtube').val()}`);
                 }
                 if ($('#website').val()) {
-                    let url = $('#website').val();
-                    // Remove protocol for common URLs to save space
-                    url = url.replace('https://', '');
-                    url = url.replace('http://', '');
-                    links.push(`Website: ${url}`);
+                    links.push(`Website: ${$('#website').val()}`);
                 }
                 
                 return links.length > 0 ? links.join('\n') : '';
@@ -1104,43 +1210,25 @@
                 if ($('#all-business-phone').val()) data.push(`Phone: ${$('#all-business-phone').val()}`);
                 if ($('#all-business-email').val()) data.push(`Email: ${$('#all-business-email').val()}`);
                 
-                // Social Media Links with optimized format
+                // Social Media Links
                 const socialLinks = [];
                 if ($('#all-facebook').val()) {
-                    let url = $('#all-facebook').val();
-                    url = url.replace('https://www.facebook.com/', 'fb:');
-                    url = url.replace('https://facebook.com/', 'fb:');
-                    socialLinks.push(`Facebook: ${url}`);
+                    socialLinks.push(`Facebook: ${$('#all-facebook').val()}`);
                 }
                 if ($('#all-instagram').val()) {
-                    let url = $('#all-instagram').val();
-                    url = url.replace('https://www.instagram.com/', 'ig:');
-                    url = url.replace('https://instagram.com/', 'ig:');
-                    socialLinks.push(`Instagram: ${url}`);
+                    socialLinks.push(`Instagram: ${$('#all-instagram').val()}`);
                 }
                 if ($('#all-twitter').val()) {
-                    let url = $('#all-twitter').val();
-                    url = url.replace('https://www.twitter.com/', 'tw:');
-                    url = url.replace('https://twitter.com/', 'tw:');
-                    socialLinks.push(`Twitter: ${url}`);
+                    socialLinks.push(`Twitter: ${$('#all-twitter').val()}`);
                 }
                 if ($('#all-linkedin').val()) {
-                    let url = $('#all-linkedin').val();
-                    url = url.replace('https://www.linkedin.com/in/', 'li:');
-                    url = url.replace('https://linkedin.com/in/', 'li:');
-                    socialLinks.push(`LinkedIn: ${url}`);
+                    socialLinks.push(`LinkedIn: ${$('#all-linkedin').val()}`);
                 }
                 if ($('#all-youtube').val()) {
-                    let url = $('#all-youtube').val();
-                    url = url.replace('https://www.youtube.com/', 'yt:');
-                    url = url.replace('https://youtube.com/', 'yt:');
-                    socialLinks.push(`YouTube: ${url}`);
+                    socialLinks.push(`YouTube: ${$('#all-youtube').val()}`);
                 }
                 if ($('#all-website').val()) {
-                    let url = $('#all-website').val();
-                    url = url.replace('https://', '');
-                    url = url.replace('http://', '');
-                    socialLinks.push(`Website: ${url}`);
+                    socialLinks.push(`Website: ${$('#all-website').val()}`);
                 }
                 
                 if (socialLinks.length > 0) {
@@ -1187,6 +1275,9 @@
                 $('#qrcode').empty();
                 $('#qr-placeholder').hide();
                 
+                // Store current QR data for high-res download
+                currentQRData = data;
+                
                 // Clear previous QR code
                 if (qrcode) {
                     qrcode.clear();
@@ -1197,9 +1288,9 @@
                     text: data,
                     width: 256,
                     height: 256,
-                    colorDark: "#2c3e50",
+                    colorDark: "#000000",  // Pure black for maximum contrast and scannability
                     colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H // Highest error correction
+                    correctLevel: QRCode.CorrectLevel.M // Medium error correction for better compatibility
                 });
             }
         });
